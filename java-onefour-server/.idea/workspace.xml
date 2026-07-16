@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="java-onefour-server:jar" />
+    </artifacts-to-build>
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b076fed8-39b9-4ebf-9f6e-d925b42f2bac" name="更改" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3CnmEDCpkqzfwDn7aG7xypreYjA" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/w1961/IdeaProjects/java-onefour-server/src/main/java/me/shaoxia&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/w1961/IdeaProjects/java-onefour-server/src/main/java/me/shaoxia/Main.java&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;工件&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15569197&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;,
+    &quot;应用程序.CodeGenerator.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.DataTransApp.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.DeepContentModifier.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.Main.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.MainApp.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.MainLauncher.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.Main_Final_CopyPaste.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.NariExcelGenerator.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.NariTableTool.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.ScoreAutoFill.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.ScoreSyncPro.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.ScoreTablePro.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.ScoringSystemUI.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.ScoringTableGenerator.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.ScoringToExcelExporter.executor&quot;: &quot;Run&quot;,
+    &quot;应用程序.main.executor&quot;: &quot;Run&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="me.shaoxia" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\w1961\IdeaProjects\java-onefour-server\src\main\java\me\shaoxia" />
+      <recent name="C:\Users\w1961\IdeaProjects\java-onefour-server\src" />
+      <recent name="C:\Users\w1961\IdeaProjects\java-onefour-server\src\main\resources" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\w1961\IdeaProjects\java-onefour-server\src" />
+      <recent name="C:\Users\w1961\IdeaProjects\java-onefour-server\src\main\java\me\shaoxia" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.25134.95" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.25134.95" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="b076fed8-39b9-4ebf-9f6e-d925b42f2bac" name="更改" comment="" />
+      <created>1777029594927</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1777029594927</updated>
+      <workItem from="1777029596150" duration="1217000" />
+      <workItem from="1777031267563" duration="2378000" />
+      <workItem from="1777062049314" duration="30215000" />
+      <workItem from="1777096991490" duration="7956000" />
+      <workItem from="1777109280309" duration="11000" />
+      <workItem from="1777116095167" duration="63000" />
+      <workItem from="1777116478065" duration="4664000" />
+      <workItem from="1777163676935" duration="2020000" />
+      <workItem from="1777171640084" duration="3000" />
+      <workItem from="1777199358850" duration="9727000" />
+      <workItem from="1777209124751" duration="527000" />
+      <workItem from="1777257657069" duration="39000" />
+      <workItem from="1777257706019" duration="7743000" />
+      <workItem from="1777338135059" duration="523000" />
+      <workItem from="1777471610975" duration="1668000" />
+      <workItem from="1777473294091" duration="228000" />
+      <workItem from="1777473531063" duration="4229000" />
+      <workItem from="1777509296383" duration="353000" />
+      <workItem from="1777509654330" duration="11000" />
+      <workItem from="1777509684827" duration="10683000" />
+      <workItem from="1777555393701" duration="799000" />
+      <workItem from="1777557418418" duration="3000" />
+      <workItem from="1777602915760" duration="107000" />
+      <workItem from="1777604712984" duration="7000" />
+      <workItem from="1777622193021" duration="1950000" />
+      <workItem from="1777624433574" duration="25000" />
+      <workItem from="1780052057402" duration="16000" />
+      <workItem from="1780280520741" duration="50000" />
+      <workItem from="1780283965611" duration="67000" />
+      <workItem from="1784202357850" duration="23000" />
+      <workItem from="1784202427558" duration="5000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
