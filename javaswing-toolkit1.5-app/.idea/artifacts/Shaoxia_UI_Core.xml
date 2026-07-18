@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Shaoxia-UI-Core">
+    <output-path>$PROJECT_DIR$/out/artifacts/Shaoxia_UI_Core</output-path>
+    <root id="archive" name="Shaoxia-UI-Core.jar">
+      <element id="directory" name="shaoxia">
+        <element id="directory" name="Utils">
+          <element id="dir-copy" path="$PROJECT_DIR$/target/classes/shaoxia/Utils" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

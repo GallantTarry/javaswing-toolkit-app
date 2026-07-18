@@ -2,7 +2,6 @@
   <artifact type="jar" name="javaswing-toolkit1.5-app:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/javaswing_toolkit1_5_app_jar</output-path>
     <root id="archive" name="javaswing-toolkit1.5-app.jar">
-      <element id="module-output" name="javaswing-toolkit1.5-app" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/javazoom/jlayer/1.0.1/jlayer-1.0.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/itextpdf/itextpdf/5.5.13.3/itextpdf-5.5.13.3.jar" path-in-jar="/" />
