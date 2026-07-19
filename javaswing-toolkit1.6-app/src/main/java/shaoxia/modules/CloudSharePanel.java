@@ -53,12 +53,18 @@ import java.util.regex.Pattern;
  */
 public class CloudSharePanel extends BackgroundPanel {
     private MainLauncher parent;
-    private List<File> sharedFiles = new ArrayList<>();
 
-    // 网络服务底层
-    private HttpServer localServer;
-    private Process sshProcess;
-    private final int SHARE_PORT = 6506;
+    // ================= 静态全局状态 (保障后台持久运行) =================
+    private static HttpServer localServer = null;
+    private static Process sshProcess = null;
+    private static final int SHARE_PORT = 6506;
+    private static List<File> sharedFiles = new ArrayList<>();
+
+    private static volatile boolean isLocalReady = false;
+    private static volatile boolean isSshChecking = false;
+    private static volatile boolean isSshReady = false;
+    private static String currentWanUrl = "正在构建 SSH 本地隧道...";
+    private static boolean hookRegistered = false;
 
     // UI 组件
     private JLabel fileStatusLabel;
@@ -70,11 +76,6 @@ public class CloudSharePanel extends BackgroundPanel {
     private GlassDropPanel dropArea;
     private ActionButton toggleShareBtn;
 
-    // 引擎状态
-    private volatile boolean isLocalReady = false;
-    private volatile boolean isSshChecking = false;
-    private volatile boolean isSshReady = false;
-
     public CloudSharePanel(MainLauncher parent) {
         // 桌面端依然保留你的门.png背景
         super("bg_imgs/门.png");
@@ -82,14 +83,36 @@ public class CloudSharePanel extends BackgroundPanel {
         setLayout(new BorderLayout(0, 0));
         setOpaque(false);
 
-        // 注册 JVM 停机钩子：当软件强行关闭时，无条件斩杀 SSH 穿透进程
-        Runtime.getRuntime().addShutdownHook(new Thread(this::killSshProcess));
+        // 只在第一次初始化时注册 JVM 停机钩子：当软件强行关闭时，无条件斩杀后台服务
+        if (!hookRegistered) {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                if (sshProcess != null && sshProcess.isAlive()) {
+                    sshProcess.destroyForcibly();
+                }
+                if (localServer != null) {
+                    localServer.stop(0);
+                }
+            }));
+            hookRegistered = true;
+        }
 
         initTopBar();
         initCoreWorkspace();
 
-        // 界面加载完毕后，立刻启动全局服务！
-        startSharing();
+        // 界面加载完毕后，如果引擎未启动则立刻启动；如果已在后台运行，则仅同步 UI 状态
+        if (!isLocalReady) {
+            startSharing();
+        } else {
+            syncUIState();
+        }
+    }
+
+    private void syncUIState() {
+        lanUrlField.setText("http://" + getLocalIPv4() + ":" + SHARE_PORT + "/");
+        wanUrlField.setText(currentWanUrl);
+        toggleShareBtn.setText("关闭引擎");
+        updateFileStatus();
+        engineIndicator.repaint();
     }
 
     private void initTopBar() {
@@ -100,7 +123,7 @@ public class CloudSharePanel extends BackgroundPanel {
         ActionButton backBtn = new ActionButton("<< 返回菜单");
         backBtn.setPreferredSize(new Dimension(130, 36));
         backBtn.addActionListener(e -> {
-            stopSharing();
+            // 移除 stopSharing()，实现返回主菜单或切入后台时服务持续运行
             parent.showMenu();
         });
 
@@ -216,7 +239,7 @@ public class CloudSharePanel extends BackgroundPanel {
 
         wanUrlField = new GlassTextField();
         wanUrlField.setEditable(false);
-        wanUrlField.setText("正在构建 SSH 本地隧道...");
+        wanUrlField.setText(currentWanUrl);
         wanUrlField.setFont(new Font("微软雅黑", Font.BOLD, 14));
         wanUrlField.setForeground(Color.WHITE);
         bindClickCopyAndJump(wanUrlField);
@@ -257,12 +280,9 @@ public class CloudSharePanel extends BackgroundPanel {
 
     // ================= 自定义 UI 组件 =================
 
-    /**
-     * 创建一个和前方输入框弧度一致，同时继承 ActionButton 黑雾风格的圆角矩形按钮
-     */
     private JButton createRoundedRectButton(String text) {
         JButton btn = new JButton(text) {
-            private final Color bgColor = new Color(30, 35, 40, 120); // ActionButton 统一黑雾玻璃色
+            private final Color bgColor = new Color(30, 35, 40, 120);
 
             @Override
             protected void paintComponent(Graphics g) {
@@ -273,7 +293,6 @@ public class CloudSharePanel extends BackgroundPanel {
                 boolean isHover = getModel().isRollover();
                 Color drawColor = bgColor;
 
-                // 悬停/点击时的透明度明暗变化，与 ActionButton 保持绝对一致
                 if (isPressed) {
                     int newAlpha = Math.min(255, bgColor.getAlpha() + 40);
                     drawColor = new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), newAlpha);
@@ -282,14 +301,10 @@ public class CloudSharePanel extends BackgroundPanel {
                     drawColor = new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), newAlpha);
                 }
 
-                // 形状不变：和 GlassTextField 严格统一的 15px 圆角矩形
                 int arc = 15;
-
-                // 画底色
                 g2.setColor(drawColor);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
 
-                // 画边框：采用 ActionButton 的高光白霜描边
                 g2.setColor(new Color(255, 255, 255, 60));
                 g2.setStroke(new BasicStroke(1.0f));
                 g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
@@ -334,7 +349,6 @@ public class CloudSharePanel extends BackgroundPanel {
 
     // ================= 工具方法 =================
 
-    // 递归计算文件/文件夹真实总大小
     public static long calculateFolderSize(File file) {
         if (file == null || !file.exists()) return 0;
         if (file.isFile()) return file.length();
@@ -390,7 +404,6 @@ public class CloudSharePanel extends BackgroundPanel {
     // ================= 弹窗渲染二维码逻辑 =================
 
     private void showQRCode(String url) {
-        // 如果文本框内容不是合法链接（比如正在加载中、引擎已关闭），则拦截弹窗
         if (url == null || url.trim().isEmpty() || !url.startsWith("http")) {
             JOptionPane.showMessageDialog(this,
                     "引擎尚未就绪或链接无效，请等待引擎预热完毕！",
@@ -411,22 +424,18 @@ public class CloudSharePanel extends BackgroundPanel {
 
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
-                    // 黑底透明交错处理，融合弹窗质感
                     rawImage.setRGB(x, y, matrix.get(x, y) ? 0xFF111111 : 0xFFFFFFFF);
                 }
             }
 
-            // === 增加圆弧正方形渲染逻辑 ===
-            int arc = 25; // 边缘圆角弧度，可根据喜好调节
+            int arc = 25;
             BufferedImage roundedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = roundedImage.createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            // 设置圆角裁剪区域并将原始二维码绘入
             g2.setClip(new RoundRectangle2D.Float(0, 0, width, height, arc, arc));
             g2.drawImage(rawImage, 0, 0, null);
 
-            // 取消裁剪，补充一个柔和的外边框，提升弹窗内的独立质感
             g2.setClip(null);
             g2.setColor(new Color(200, 200, 200, 80));
             g2.drawRoundRect(0, 0, width - 1, height - 1, arc, arc);
@@ -460,7 +469,7 @@ public class CloudSharePanel extends BackgroundPanel {
             lanUrlField.setText("http://" + getLocalIPv4() + ":" + SHARE_PORT + "/");
             isLocalReady = true;
 
-            toggleShareBtn.setText("关闭服务");
+            toggleShareBtn.setText("关闭引擎");
 
             redeploySshTunnel();
 
@@ -479,11 +488,12 @@ public class CloudSharePanel extends BackgroundPanel {
         isLocalReady = false;
         isSshReady = false;
         isSshChecking = false;
+        currentWanUrl = "隧道已销毁";
         engineIndicator.repaint();
 
         lanUrlField.setText("服务已关闭");
-        wanUrlField.setText("隧道已销毁");
-        toggleShareBtn.setText("启动服务");
+        wanUrlField.setText(currentWanUrl);
+        toggleShareBtn.setText("启动引擎");
     }
 
     private void killSshProcess() {
@@ -501,7 +511,8 @@ public class CloudSharePanel extends BackgroundPanel {
 
     // ✨ 核心机制：利用原生 SSH 建立穿透隧道
     private void startSshTunnel() {
-        wanUrlField.setText("正在向公网节点请求 SSH 映射...");
+        currentWanUrl = "正在向公网节点请求 SSH 映射...";
+        wanUrlField.setText(currentWanUrl);
         isSshChecking = true;
         isSshReady = false;
         engineIndicator.repaint();
@@ -511,11 +522,14 @@ public class CloudSharePanel extends BackgroundPanel {
                 ProcessBuilder builder = new ProcessBuilder(
                         "ssh",
                         "-o", "StrictHostKeyChecking=no",
+                        "-o", "BatchMode=yes",
                         "-R", "80:localhost:" + SHARE_PORT,
                         "nokey@localhost.run"
                 );
                 builder.redirectErrorStream(true);
                 sshProcess = builder.start();
+
+                sshProcess.getOutputStream().close();
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(sshProcess.getInputStream()));
                 String line;
@@ -528,11 +542,12 @@ public class CloudSharePanel extends BackgroundPanel {
                         Matcher matcher = urlPattern.matcher(line);
                         if (matcher.find()) {
                             String publicUrl = matcher.group(1) + "/";
+                            currentWanUrl = publicUrl; // 将成功建立的公网地址推送到全局状态
                             urlFound = true;
                             isSshChecking = false;
                             isSshReady = true;
                             SwingUtilities.invokeLater(() -> {
-                                wanUrlField.setText(publicUrl);
+                                wanUrlField.setText(currentWanUrl);
                                 engineIndicator.repaint();
                             });
                         }
@@ -540,8 +555,9 @@ public class CloudSharePanel extends BackgroundPanel {
                 }
             } catch (Exception e) {
                 isSshChecking = false;
+                currentWanUrl = "[调度异常] 当前系统环境缺失原生 SSH 服务";
                 SwingUtilities.invokeLater(() -> {
-                    wanUrlField.setText("[调度异常] 当前系统环境缺失原生 SSH 服务");
+                    wanUrlField.setText(currentWanUrl);
                     engineIndicator.repaint();
                 });
             }
