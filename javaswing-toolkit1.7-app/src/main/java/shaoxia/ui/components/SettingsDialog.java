@@ -158,11 +158,10 @@ public class SettingsDialog {
         bgLabel.setFont(mainFont);
         bgLabel.setForeground(Color.WHITE);
 
-        String[] bgNames = {"月球与地球","房间","门"};
+        String[] bgNames = {"月球与地球"};
         String[] bgPaths = {
                 "bg_imgs/月球与地球.png",
-                "bg_imgs/房间.png",
-                "bg_imgs/门.png",
+
         };
 
         GlassComboBox<String> bgCombo = new GlassComboBox<>(new DefaultComboBoxModel<>(bgNames));
