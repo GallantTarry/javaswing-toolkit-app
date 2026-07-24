@@ -19,10 +19,13 @@ import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,6 +64,21 @@ public class ScoringPanel extends BackgroundPanel {
         leftTop.add(backBtn);
         topBar.add(leftTop, BorderLayout.WEST);
 
+        // 🚀 修改：右上角跳转图标 (圆绵羊版)，完全对标其他面板的 50x50 JComponent
+        SheepIndicator sheepLink = new SheepIndicator();
+        sheepLink.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI("https://tools.pdf24.org/zh/"));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(ScoringPanel.this, "无法打开浏览器，请检查网络设置。");
+                }
+            }
+        });
+        topBar.add(sheepLink, BorderLayout.EAST);
+
         add(topBar, BorderLayout.NORTH);
 
         // 一体式超大拖拽区域 (毛玻璃拟态 UI)
@@ -68,7 +86,7 @@ public class ScoringPanel extends BackgroundPanel {
         dropArea.setOpaque(false);
         dropArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-// --- 终极完美居中方案：彻底弃用 HTML，改用原生 GridBagLayout 实现绝对居中 ---
+        // --- 终极完美居中方案：彻底弃用 HTML，改用原生 GridBagLayout 实现绝对居中 ---
         JPanel centerTextPanel = new JPanel(new GridBagLayout());
         centerTextPanel.setOpaque(false); // 保持透明，露出底部的毛玻璃效果
 
@@ -78,7 +96,7 @@ public class ScoringPanel extends BackgroundPanel {
         gbc.anchor = GridBagConstraints.CENTER;  // 核心：强制所有组件在物理中心对齐
         gbc.insets = new Insets(8, 0, 8, 0);     // 设置行与行之间的上下间距
 
-// 字号从原先的 24px 放大到 32px（粗体），少侠可根据视觉效果自由调整该数值
+        // 字号从原先的 24px 放大到 32px（粗体），少侠可根据视觉效果自由调整该数值
         Font labelFont = new Font(Font.MONOSPACED, Font.BOLD, 32);
 
         String[] textLines = {"WE ARE", "\uD83D\uDD4A ALL", "GREAT", "APES"};
@@ -90,9 +108,10 @@ public class ScoringPanel extends BackgroundPanel {
             centerTextPanel.add(label, gbc); // 运用居中约束加入面板
         }
 
-// 将这个完美居中的面板放入您的毛玻璃拖拽区中
+        // 将这个完美居中的面板放入您的毛玻璃拖拽区中
         dropArea.add(centerTextPanel, BorderLayout.CENTER);
-// --- 核心修复结束 ---
+        // --- 核心修复结束 ---
+
         // 神来之笔：让黑洞本身变成音乐播放/暂停的隐藏按钮
         dropArea.setCursor(new Cursor(Cursor.HAND_CURSOR));
         dropArea.addMouseListener(new MouseAdapter() {
@@ -403,6 +422,165 @@ public class ScoringPanel extends BackgroundPanel {
         TableDataHolder(String t, List<String[]> d) {
             this.title = t;
             this.data = d;
+        }
+    }
+
+    /**
+     * 🎨 原生自绘的“圆绵羊”图标指示器组件 (对标 50x50 标准)
+     */
+    /**
+     * 🎨 基于内部数据库原生自绘的“正版 PDF24 绵羊”神兽图标
+     * 完美还原大突眼、厚嘴唇、非对称羊毛与水平耷拉的耳朵
+     */
+    /**
+     * 🎨 基于内部数据库原生自绘的“正版 PDF24 绵羊”神兽图标
+     * 完美还原大突眼、厚嘴唇、非对称羊毛与水平耷拉的耳朵
+     */
+    /**
+     * 🎨 基于内部数据库原生自绘的“正版 PDF24 绵羊”神兽图标
+     * 完美还原大突眼、厚嘴唇、非对称羊毛与水平耷拉的耳朵
+     */
+    static class SheepIndicator extends JComponent {
+
+        // ✨ 1. 缩放比例：0.8
+        private final double SCALE = 0.8;
+
+        // ✨ 2. 坐标微调参数 (少侠可随意修改这俩数值)
+        private final int OFFSET_X = 10; // 负数代表向左移动
+        private final int OFFSET_Y = 8;  // 正数代表向下移动
+
+        public SheepIndicator() {
+            // 为了防止向左、向下平移时超出边框导致被“裁切”，
+            // 我们把隐形画框（安全区）从原本的 50x50 放大到了 65x65。
+            // 另外，在 BorderLayout.EAST (靠右排列) 布局中，画框变宽本身就会在视觉上将图标向左推。
+            setPreferredSize(new Dimension(65, 65));
+            setCursor(new Cursor(Cursor.HAND_CURSOR));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            Graphics2D g2 = (Graphics2D) g.create();
+
+            // ✨ 核心修改：先平移坐标轴。
+            // 其中的 12 像素是基础缓冲距离，用来抵消 OFFSET_X 的负数，保证左移时图形坐标不会小于 0 而被裁掉。
+            g2.translate(12 + OFFSET_X, OFFSET_Y);
+
+            // 然后再按照 0.8 的比例统一缩放
+            g2.scale(SCALE, SCALE);
+
+            g2.setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+
+            g2.setStroke(new BasicStroke(
+                    1.8f,
+                    BasicStroke.CAP_ROUND,
+                    BasicStroke.JOIN_ROUND));
+
+            // =========================
+            // 耳朵
+            // =========================
+
+            g2.setColor(new Color(120,120,120));
+            g2.fillOval(4,22,8,10);
+            g2.fillOval(38,22,8,10);
+
+            g2.setColor(Color.BLACK);
+            g2.drawOval(4,22,8,10);
+            g2.drawOval(38,22,8,10);
+
+            // =========================
+            // 羊毛
+            // =========================
+
+            Area wool = new Area();
+
+            wool.add(new Area(new Ellipse2D.Float(9,7,14,14)));
+            wool.add(new Area(new Ellipse2D.Float(18,4,15,15)));
+            wool.add(new Area(new Ellipse2D.Float(28,7,14,14)));
+
+            wool.add(new Area(new Ellipse2D.Float(7,15,16,16)));
+            wool.add(new Area(new Ellipse2D.Float(17,12,18,18)));
+            wool.add(new Area(new Ellipse2D.Float(27,15,16,16)));
+
+            g2.setColor(Color.WHITE);
+            g2.fill(wool);
+
+            g2.setColor(Color.BLACK);
+            g2.draw(wool);
+
+            // =========================
+            // 鼻口
+            // =========================
+
+            Area snout = new Area(
+                    new Ellipse2D.Float(
+                            10,21,
+                            30,19));
+
+            g2.setColor(new Color(244,205,160));
+            g2.fill(snout);
+
+            g2.setColor(Color.BLACK);
+            g2.draw(snout);
+
+            // =========================
+            // 左眼
+            // =========================
+
+            g2.setColor(Color.WHITE);
+            g2.fillOval(12,12,15,15);
+
+            g2.setColor(Color.BLACK);
+            g2.drawOval(12,12,15,15);
+
+            g2.fillOval(19,18,3,3);
+
+            // =========================
+            // 右眼（更大）
+            // =========================
+
+            g2.setColor(Color.WHITE);
+            g2.fillOval(23,8,20,20);
+
+            g2.setColor(Color.BLACK);
+            g2.drawOval(23,8,20,20);
+
+            g2.fillOval(32,17,3,3);
+
+            // =========================
+            // 嘴巴
+            // =========================
+
+            g2.drawArc(
+                    14,28,
+                    10,8,
+                    150,
+                    130);
+
+            g2.drawArc(
+                    18,27,
+                    4,4,
+                    20,
+                    90);
+
+            // =========================
+            // 鼻孔
+            // =========================
+
+            g2.fillOval(20,27,2,3);
+            g2.fillOval(27,26,2,3);
+
+            // =========================
+            // 眉毛
+            // =========================
+
+            g2.drawLine(14,10,18,11);
+            g2.drawLine(34,6,38,8);
+
+            g2.dispose();
         }
     }
 }

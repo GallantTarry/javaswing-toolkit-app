@@ -404,6 +404,10 @@ public class SettingsDialog {
                
                感谢 唧唧down 提供的文件下载功能。
                
+               感谢 PDF24 提供的线上文档处理功能。
+               
+               感谢 高德导航 提供的Adcode api接口。
+               
                感谢 南瑞工程招标代理一部All。
                
                ===================MIT License===================

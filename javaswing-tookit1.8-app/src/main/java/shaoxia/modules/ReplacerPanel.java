@@ -51,7 +51,7 @@ public class ReplacerPanel extends BackgroundPanel {
     private JTextArea logArea;
 
     // ✨ 新增：纯黑模式状态标志
-    private volatile boolean isBlackModeEnabled = false;
+    private volatile boolean isBlackModeEnabled = true;
 
     public ReplacerPanel(MainLauncher parent) {
         super("bg_imgs/月球与地球.png");
@@ -404,11 +404,12 @@ public class ReplacerPanel extends BackgroundPanel {
     }
 
     // ✨ 新增：纯黑模式右上角指示灯组件
+    // ✨ 新增：纯黑模式右上角指示灯组件（三原色环绕版）
+    // ✨ 新增：纯黑/彩色模式右上角指示灯组件（逻辑修正版）
     class BlackModeIndicator extends JComponent {
         public BlackModeIndicator() {
             setPreferredSize(new Dimension(50, 50));
             setCursor(new Cursor(Cursor.HAND_CURSOR));
-           // setToolTipText("纯黑模式 (Black Mode) - 开启后，被替换文本将被强制渲染为纯黑色，大小样式保持不变。");
 
             addMouseListener(new MouseAdapter() {
                 @Override
@@ -417,7 +418,7 @@ public class ReplacerPanel extends BackgroundPanel {
                     repaint();
                     log(isBlackModeEnabled ?
                             ">>> [设置已变] 纯黑模式已开启：新替换的文本颜色强制为黑色。" :
-                            ">>> [设置已变] 纯黑模式已关闭：新替换的文本保留原色彩。");
+                            ">>> [设置已变] 彩色模式已开启：新替换的文本保留原色彩。");
                 }
             });
         }
@@ -432,28 +433,44 @@ public class ReplacerPanel extends BackgroundPanel {
             int cx = getWidth() / 2;
             int cy = getHeight() / 2;
 
-            Color coreColor;
-            Color glowColor;
-            if (isBlackModeEnabled) {
-                // 开启状态：强烈反差的白光晕包围极暗内核
-                coreColor = new Color(20, 20, 20);
-                glowColor = new Color(255, 255, 255, 120);
+            // 定义外围环绕圈的参数
+            int ringRadius = 15;
+            int ringDiameter = ringRadius * 2;
+            int ringX = cx - ringRadius;
+            int ringY = cy - ringRadius;
+
+            if (!isBlackModeEnabled) {
+                // 关闭纯黑 (即彩色模式)：三原色 (RGB) 科技感环绕
+                g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                // 顶部红色弧
+                g2.setColor(new Color(255, 71, 87));
+                g2.drawArc(ringX, ringY, ringDiameter, ringDiameter, 95, 110);
+
+                // 左下绿色弧
+                g2.setColor(new Color(46, 213, 115));
+                g2.drawArc(ringX, ringY, ringDiameter, ringDiameter, 215, 110);
+
+                // 右下蓝色弧
+                g2.setColor(new Color(30, 144, 255));
+                g2.drawArc(ringX, ringY, ringDiameter, ringDiameter, 335, 110);
+
+                // 彩色模式内核
+                g2.setColor(new Color(40, 40, 40));
+                g2.fillOval(cx - 10, cy - 10, 20, 20);
             } else {
-                // 关闭状态：暗淡静默
-                coreColor = new Color(130, 130, 130);
-                glowColor = new Color(80, 80, 80, 40);
+                // 默认/开启纯黑模式：极简暗色闭合灰环
+                g2.setStroke(new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                g2.setColor(new Color(80, 80, 80));
+                g2.drawArc(ringX, ringY, ringDiameter, ringDiameter, 0, 360);
+
+                // 纯黑模式极暗内核
+                g2.setColor(new Color(15, 15, 15));
+                g2.fillOval(cx - 10, cy - 10, 20, 20);
             }
 
-            // 绘制光晕
-            g2.setColor(glowColor);
-            g2.fillOval(cx - 16, cy - 16, 32, 32);
-
-            // 绘制核心 (不同于引擎指示灯的圆角矩形，这里采用绝对的圆形)
-            g2.setColor(coreColor);
-            g2.fillOval(cx - 10, cy - 10, 20, 20);
-
-            // 绘制内部徽章：代表文字排版 (Text) 的 "A" 字符，用极简的折线刻画
-            g2.setColor(isBlackModeEnabled ? Color.WHITE : new Color(220, 220, 220));
+            // 绘制内部徽章：代表文字排版的 "A" 字符
+            g2.setColor(isBlackModeEnabled ? new Color(150, 150, 150) : Color.WHITE);
             g2.setStroke(new BasicStroke(1.8f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
             int[] aX = {cx - 4, cx, cx + 4};

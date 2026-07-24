@@ -462,10 +462,11 @@ public class MainLauncher extends JFrame {
         JPanel topArea = new JPanel(new GridBagLayout());
         topArea.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-
+//标题
         JLabel title = new JLabel("ToolKit");
         title.setFont(new Font("Montserrat", Font.BOLD, 56));
         title.setForeground(Color.WHITE);
+  //
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 3;

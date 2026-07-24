@@ -93,7 +93,7 @@ public class BlueCat extends JComponent {
         });
 
         if (isImageLoaded) {
-            say("Wow! It's so nice to meet you!");
+            say("How have u been?");
         }
     }
 
